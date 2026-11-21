@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: petcare-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: petcare
+      MYSQL_USER: petcare
+      MYSQL_PASSWORD: petcare123
+      MYSQL_ROOT_PASSWORD: root123
+    ports:
+      - '3306:3306'
+    volumes:
+      - petcare_mysql_data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: petcare-phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root123
+      PMA_USER: root
+      PMA_PASSWORD: root123
+    ports:
+      - '8080:80'
+
+volumes:
+  petcare_mysql_data:
